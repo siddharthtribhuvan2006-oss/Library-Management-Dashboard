@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LibraFlow — Library Management System</title>
+<style>
+:root{--nav:#0f172a;--blue:#2563eb;--sky:#38bdf8;--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#64748b;--line:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}button{cursor:pointer}.app{display:flex;min-height:100vh}
+.sidebar{width:250px;background:linear-gradient(180deg,#0f172a,#16213a);color:#fff;padding:24px 16px;position:fixed;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:4px 10px 28px;font-size:20px;font-weight:800}.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--sky),var(--blue));display:grid;place-items:center;font-size:21px}
+.nav{display:grid;gap:6px}.nav button{border:0;background:transparent;color:#cbd5e1;text-align:left;padding:12px 13px;border-radius:10px;font-weight:600}.nav button:hover,.nav button.active{background:#ffffff14;color:#fff}.nav button.active{box-shadow:inset 3px 0 var(--sky)}
+.side-note{position:absolute;bottom:24px;left:22px;right:22px;background:#ffffff0d;border:1px solid #ffffff14;border-radius:12px;padding:13px;color:#94a3b8;font-size:12px;line-height:1.5}
+.main{margin-left:250px;width:calc(100% - 250px);padding:26px 32px 45px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.top h1{font-size:25px;margin:0 0 4px}.top p{margin:0;color:var(--muted);font-size:14px}
+.profile{display:flex;align-items:center;gap:10px}.avatar{width:39px;height:39px;border-radius:50%;background:#dbeafe;color:#1d4ed8;display:grid;place-items:center;font-weight:800}
+.page{display:none}.page.active{display:block}.hero{background:linear-gradient(120deg,#172554,#2563eb 60%,#38bdf8);color:#fff;border-radius:18px;padding:28px;display:flex;justify-content:space-between;gap:25px;box-shadow:0 15px 35px #2563eb24;margin-bottom:22px}.hero h2{font-size:29px;margin:0 0 8px}.hero p{max-width:650px;color:#dbeafe;line-height:1.65;margin:0}.hero-art{font-size:68px;align-self:center}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:22px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;box-shadow:0 5px 20px #0f172a08}.stat{padding:18px}.stat .icon{font-size:23px}.stat b{display:block;font-size:27px;margin:7px 0 3px}.muted{color:var(--muted);font-size:13px}
+.grid2{display:grid;grid-template-columns:1.45fr 1fr;gap:18px}.card-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.card-head h3{margin:0;font-size:16px}.card-body{padding:18px}
+.table{width:100%;border-collapse:collapse;font-size:13px}.table th,.table td{padding:13px 10px;text-align:left;border-bottom:1px solid var(--line)}.table th{color:#64748b;font-weight:700}
+.badge{padding:5px 9px;border-radius:99px;font-size:11px;font-weight:700;display:inline-block}.available{background:#dcfce7;color:#166534}.issued{background:#dbeafe;color:#1d4ed8}.overdue{background:#fee2e2;color:#b91c1c}
+.activity{display:grid;gap:14px}.activity-item{display:flex;gap:12px;align-items:flex-start}.dot{width:9px;height:9px;border-radius:50%;background:#2563eb;margin-top:6px;flex:none}
+.searchbar{display:flex;gap:10px;margin-bottom:18px}.searchbar input,.form input,.form select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 13px;outline:none;width:100%}.btn{border:0;border-radius:10px;padding:10px 15px;background:var(--blue);color:#fff;font-weight:700}.btn.secondary{background:#e2e8f0;color:#334155}
+.book-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.book{padding:18px}.cover{height:120px;border-radius:11px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:grid;place-items:center;font-size:45px;margin-bottom:14px}.book h3{margin:0 0 5px;font-size:15px}.book p{margin:0 0 12px;color:var(--muted);font-size:12px}.book .row{display:flex;justify-content:space-between;align-items:center}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.form label{display:block;font-size:12px;font-weight:700;margin-bottom:7px;color:#475569}.notice{padding:13px 15px;background:#eff6ff;border-left:4px solid #3b82f6;border-radius:8px;color:#334155;font-size:13px;line-height:1.5}
+.kpi{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}.kpi:last-child{border-bottom:0}
+.modal{position:fixed;inset:0;background:#0f172a88;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}.modal.show{display:flex}.modalbox{background:#fff;border-radius:16px;width:min(480px,100%);padding:22px;box-shadow:0 25px 60px #0004}.toast{position:fixed;right:24px;bottom:24px;background:#0f172a;color:#fff;padding:13px 17px;border-radius:10px;display:none;box-shadow:0 10px 30px #0004}
+@media(max-width:900px){.sidebar{width:70px;padding:20px 9px}.brand span,.nav button span,.side-note{display:none}.main{margin-left:70px;width:calc(100% - 70px);padding:20px}.stats{grid-template-columns:1fr 1fr}.grid2,.book-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.hero-art{display:none}.stats{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
+
+.payment-steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.step{padding:8px 12px;border-radius:20px;background:#e2e8f0;color:#475569;font-size:12px;font-weight:700}
+.step.active{background:#dbeafe;color:#1d4ed8}.payment-card{padding:20px}
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.receipt{background:#f8fafc;border:1px dashed #94a3b8;border-radius:12px;padding:18px}
+.receipt-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px}
+.receipt-row:last-child{border-bottom:0;font-weight:800;font-size:16px}
+.avatar-sm{width:30px;height:30px;border-radius:50%;display:inline-grid;place-items:center;background:#dbeafe;color:#1d4ed8;font-weight:700;margin-right:8px}
+@media(max-width:700px){.pay-grid{grid-template-columns:1fr}}
+
+.report-actions{display:flex;gap:10px;flex-wrap:wrap}.report-table-wrap{overflow-x:auto}.report-section{margin-top:18px}.report-section h3{margin:0 0 12px}.qr-box{display:grid;place-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px auto;max-width:250px}.qr-box img{width:190px;height:190px;max-width:100%}.small-note{font-size:12px;color:var(--muted);line-height:1.5}.report-status{margin-top:14px}
+@media print{.sidebar,.top,.no-print,button{display:none!important}.main{margin:0;width:100%;padding:0}.page{display:none!important}#reports.page.active{display:block!important}.card{box-shadow:none;break-inside:avoid}}
+</style></head>
+<body>
+<div class="app">
+<aside class="sidebar"><div class="brand"><div class="logo">📚</div><span>LibraFlow</span></div>
+<nav class="nav">
+<button class="active" onclick="showPage('dashboard',this)">🏠 <span>Dashboard</span></button>
+<button onclick="showPage('books',this)">📖 <span>Books</span></button>
+<button onclick="showPage('members',this)">👥 <span>Members</span></button>
+<button onclick="showPage('circulation',this)">🔄 <span>Issue & Return</span></button>
+<button onclick="showPage('fines',this)">💰 <span>Fines</span></button>
+<button onclick="showPage('reports',this)">📊 <span>Reports</span></button>
+<button onclick="showPage('about',this)">ℹ️ <span>Project Info</span></button></nav>
+<div class="side-note"><b>Academic Demo</b><br>Library Management System<br>TYCS Mini Project</div></aside>
+<main class="main">
+<header class="top"><div><h1 id="pageTitle">Library Dashboard</h1><p>Manage books, members and circulation from one place.</p></div><div class="profile"><div><b>Admin</b><div class="muted">Librarian</div></div><div class="avatar">ST</div></div></header>
+
+<section id="dashboard" class="page active">
+<div class="hero"><div><h2>Welcome to LibraFlow 👋</h2><p>The Library Management System (LMS) is a software application designed to automate the day-to-day operations of a library, replacing manual record-keeping with a streamlined digital process. It enables librarians to manage books, members, and transactions efficiently, while giving users an easy way to search for books, check availability, and track their borrowing history. The system aims to save time, reduce errors, and improve the overall library experience for both administrators and members.</p><br><button class="btn" onclick="showPage('books',document.querySelectorAll('.nav button')[1])">Browse Library →</button></div><div class="hero-art">📚</div></div>
+<div class="stats">
+<div class="card stat"><div class="icon">📚</div><b>1,248</b><span class="muted">Total Books</span></div><div class="card stat"><div class="icon">👥</div><b>326</b><span class="muted">Active Students</span></div><div class="card stat"><div class="icon">↗️</div><b>84</b><span class="muted">Books Currently Issued</span></div><div class="card stat"><div class="icon">⚠️</div><b>12</b><span class="muted">Overdue Books</span></div></div>
+<div class="grid2"><div class="card"><div class="card-head"><h3>Recent Transactions</h3><button class="btn secondary" onclick="showPage('circulation',document.querySelectorAll('.nav button')[3])">View all</button></div><div class="card-body"><table class="table"><thead><tr><th>Book</th><th>Member</th><th>Status</th><th>Due</th></tr></thead><tbody>
+<tr><td>Atomic Habits</td><td>Rahul S.</td><td><span class="badge issued">Issued</span></td><td>12 Oct</td></tr><tr><td>Clean Code</td><td>Priya M.</td><td><span class="badge overdue">Overdue</span></td><td>04 Oct</td></tr><tr><td>Python Crash Course</td><td>Aman K.</td><td><span class="badge issued">Issued</span></td><td>15 Oct</td></tr><tr><td>The Alchemist</td><td>Neha P.</td><td><span class="badge available">Returned</span></td><td>—</td></tr>
+</tbody></table></div></div>
+<div class="card"><div class="card-head"><h3>Quick Activity</h3></div><div class="card-body"><div class="activity">
+<div class="activity-item"><div class="dot"></div><div><b>New member registered</b><div class="muted">Riya Sharma · 10 minutes ago</div></div></div><div class="activity-item"><div class="dot"></div><div><b>Book returned</b><div class="muted">The Alchemist · 32 minutes ago</div></div></div><div class="activity-item"><div class="dot"></div><div><b>Fine paid</b><div class="muted">₹40 collected · 1 hour ago</div></div></div><div class="activity-item"><div class="dot"></div><div><b>Inventory updated</b><div class="muted">5 new books added · Today</div></div></div>
+</div></div></div></div></section>
+
+<section id="books" class="page"><div class="card">
+<div class="card-head"><h3>Study Book Catalog</h3><button class="btn" onclick="openModal('Add New Book')">+ Add Book</button></div>
+<div class="card-body">
+<div class="searchbar"><input id="bookSearch" placeholder="Search by title, author, subject or category..." oninput="filterBooks()">
+<select id="category" onchange="filterBooks()"><option>All Categories</option><option>Programming</option><option>Database</option><option>Web Development</option><option>Data Science</option><option>Computer Science</option><option>Mathematics</option><option>Self Help</option><option>Fiction</option></select></div>
+<div class="book-grid" id="bookGrid"></div></div></div></section>
+
+<section id="members" class="page"><div class="card">
+<div class="card-head"><h3>Student & Member Management</h3><button class="btn" onclick="openModal('Register Student')">+ Register Student</button></div>
+<div class="card-body">
+<div class="notice">Student records include membership ID, course, year, contact information, borrowed books and membership status.</div><br>
+<table class="table"><thead><tr><th>Member ID</th><th>Student</th><th>Course / Year</th><th>Books</th><th>Phone</th><th>Status</th></tr></thead><tbody>
+<tr><td>LM-1001</td><td><span class="avatar-sm">RS</span>Rahul Sharma</td><td>TYCS</td><td>2 / 5</td><td>98******21</td><td><span class="badge available">Active</span></td></tr>
+<tr><td>LM-1002</td><td><span class="avatar-sm">PM</span>Priya Mehta</td><td>TYCS</td><td>1 / 5</td><td>97******42</td><td><span class="badge available">Active</span></td></tr>
+<tr><td>LM-1003</td><td><span class="avatar-sm">AK</span>Aman Khan</td><td>SYCS</td><td>3 / 5</td><td>99******18</td><td><span class="badge available">Active</span></td></tr>
+<tr><td>LM-1004</td><td><span class="avatar-sm">NP</span>Neha Patil</td><td>TYBSc IT</td><td>0 / 5</td><td>98******65</td><td><span class="badge available">Active</span></td></tr>
+<tr><td>LM-1005</td><td><span class="avatar-sm">VS</span>Vikram Shah</td><td>TYCS</td><td>4 / 5</td><td>91******34</td><td><span class="badge available">Active</span></td></tr>
+<tr><td>LM-1006</td><td><span class="avatar-sm">AS</span>Ananya Singh</td><td>SYCS</td><td>2 / 5</td><td>90******77</td><td><span class="badge available">Active</span></td></tr>
+<tr><td>LM-1007</td><td><span class="avatar-sm">KP</span>Karan Patil</td><td>FYCS</td><td>1 / 5</td><td>88******14</td><td><span class="badge available">Active</span></td></tr>
+<tr><td>LM-1008</td><td><span class="avatar-sm">SR</span>Sneha Rao</td><td>TYCS</td><td>2 / 5</td><td>93******52</td><td><span class="badge available">Active</span></td></tr>
+<tr><td>LM-1009</td><td><span class="avatar-sm">RJ</span>Rohan Joshi</td><td>TYBSc IT</td><td>0 / 5</td><td>96******09</td><td><span class="badge available">Active</span></td></tr>
+<tr><td>LM-1010</td><td><span class="avatar-sm">PD</span>Priyanka Desai</td><td>SYCS</td><td>3 / 5</td><td>95******83</td><td><span class="badge available">Active</span></td></tr>
+<tr><td>LM-1011</td><td><span class="avatar-sm">MS</span>Mohit Shah</td><td>TYCS</td><td>1 / 5</td><td>89******27</td><td><span class="badge available">Active</span></td></tr>
+<tr><td>LM-1012</td><td><span class="avatar-sm">DI</span>Diya Iyer</td><td>FYCS</td><td>2 / 5</td><td>92******61</td><td><span class="badge available">Active</span></td></tr>
+</tbody></table></div></div></section>
+
+<section id="circulation" class="page">
+<div class="grid2">
+<div class="card"><div class="card-head"><h3>Issue / Return Book</h3></div><div class="card-body form">
+<div class="form-grid"><div><label>Student</label><select id="memberSelect"></select></div>
+<div><label>Book</label><select id="bookSelect"></select></div></div><br>
+<div class="form-grid"><div><label>Issue Date</label><input type="date" id="issueDate"></div><div><label>Due Date</label><input type="date" id="dueDate"></div></div><br>
+<button class="btn" onclick="issueBook()">Issue Book</button> <button class="btn secondary" onclick="returnBook()">Return Book</button>
+</div></div>
+<div class="card"><div class="card-head"><h3>Current Circulation</h3></div><div class="card-body">
+<div class="kpi"><span>Atomic Habits · Rahul</span><span class="badge issued">Issued</span></div>
+<div class="kpi"><span>Clean Code · Priya</span><span class="badge overdue">4 days overdue</span></div>
+<div class="kpi"><span>Python Crash Course · Aman</span><span class="badge issued">Issued</span></div>
+<div class="kpi"><span>Data Structures · Vikram</span><span class="badge issued">Issued</span></div>
+<div class="kpi"><span>The Alchemist · Neha</span><span class="badge available">Returned</span></div>
+<div class="kpi"><span>Computer Networks · Sneha</span><span class="badge overdue">2 days overdue</span></div>
+</div></div></div>
+<br>
+<div class="card"><div class="card-head"><h3>Issue & Return History</h3></div><div class="card-body"><table class="table"><thead><tr><th>Date</th><th>Student</th><th>Book</th><th>Action</th><th>Due Date</th><th>Result</th></tr></thead><tbody id="historyRows">
+<tr><td>08 Oct</td><td>Rahul Sharma</td><td>Atomic Habits</td><td>Issued</td><td>22 Oct</td><td><span class="badge issued">Active</span></td></tr>
+<tr><td>07 Oct</td><td>Priya Mehta</td><td>Clean Code</td><td>Issued</td><td>11 Oct</td><td><span class="badge overdue">Overdue</span></td></tr>
+<tr><td>06 Oct</td><td>Aman Khan</td><td>Python Crash Course</td><td>Issued</td><td>20 Oct</td><td><span class="badge issued">Active</span></td></tr>
+<tr><td>05 Oct</td><td>Neha Patil</td><td>The Alchemist</td><td>Returned</td><td>19 Oct</td><td><span class="badge available">On Time</span></td></tr>
+<tr><td>04 Oct</td><td>Vikram Shah</td><td>Data Structures Using C</td><td>Issued</td><td>18 Oct</td><td><span class="badge issued">Active</span></td></tr>
+<tr><td>01 Oct</td><td>Sneha Rao</td><td>Computer Networks</td><td>Issued</td><td>06 Oct</td><td><span class="badge overdue">Overdue</span></td></tr>
+<tr><td>29 Sep</td><td>Karan Patil</td><td>Web Technologies</td><td>Returned</td><td>13 Oct</td><td><span class="badge available">On Time</span></td></tr>
+</tbody></table></div></div>
+</section>
+
+<section id="fines" class="page">
+<div class="card"><div class="card-head"><h3>Overdue Fine & Payment Center</h3><span class="badge overdue">Payment Workflow</span></div><div class="card-body">
+<div class="payment-steps"><span class="step active">1. Overdue</span><span class="step">2. Calculate Fine</span><span class="step">3. Select Payment</span><span class="step">4. Confirm</span><span class="step">5. Receipt</span></div>
+<div class="grid2">
+<div class="payment-card">
+<h3 style="margin-top:0">Outstanding Fines</h3>
+<table class="table"><thead><tr><th>Student</th><th>Book</th><th>Late</th><th>Fine</th><th>Pay</th></tr></thead><tbody>
+<tr><td>Priya Mehta</td><td>Clean Code</td><td>4 days</td><td>₹40</td><td><button class="btn" onclick="startPayment('Priya Mehta','Clean Code',40,4)">Pay</button></td></tr>
+<tr><td>Sneha Rao</td><td>Computer Networks</td><td>2 days</td><td>₹20</td><td><button class="btn" onclick="startPayment('Sneha Rao','Computer Networks',20,2)">Pay</button></td></tr>
+<tr><td>Vikram Shah</td><td>Operating System Concepts</td><td>5 days</td><td>₹50</td><td><button class="btn" onclick="startPayment('Vikram Shah','Operating System Concepts',50,5)">Pay</button></td></tr>
+<tr><td>Rohan Joshi</td><td>Java: The Complete Reference</td><td>3 days</td><td>₹30</td><td><button class="btn" onclick="startPayment('Rohan Joshi','Java: The Complete Reference',30,3)">Pay</button></td></tr>
+</tbody></table></div>
+<div class="payment-card card" id="paymentPanel"><h3 style="margin-top:0">Payment Process</h3><div class="notice">Select <b>Pay</b> beside an overdue book. The system will calculate the fine and open the payment process.</div><br>
+<div class="kpi"><span>Selected student</span><b id="payStudent">—</b></div><div class="kpi"><span>Book</span><b id="payBook">—</b></div><div class="kpi"><span>Days overdue</span><b id="payDays">—</b></div><div class="kpi"><span>Total fine</span><b id="payAmount">₹0</b></div>
+<div class="form" style="margin-top:15px"><label>Payment Method</label><select id="paymentMethod" onchange="updatePaymentMethod()"><option>UPI / Scan QR</option><option>Debit / Credit Card (Demo)</option><option>Cash at Library Counter</option></select>
+<div id="qrPayment" style="display:none;margin-top:14px"><div class="notice"><b>Scan to pay</b><br>This demo QR contains the fine amount and receipt reference. It is not connected to a real bank or UPI account.</div><div class="qr-box"><img id="paymentQr" alt="Demo payment QR code" src=""><div class="small-note" id="qrCaption">Demo payment QR</div></div><div class="small-note">For real collections, replace this with your verified merchant UPI QR or integrate a payment gateway. Do not mark a payment paid based only on scanning this demo QR.</div></div>
+<br><button class="btn" id="confirmPay" onclick="confirmPayment()" disabled>Confirm Demo Payment</button></div>
+<div id="receipt" style="display:none;margin-top:18px"></div></div></div></div></div>
+<div class="card" style="margin-top:18px"><div class="card-head"><h3>Payment History</h3></div><div class="card-body"><table class="table"><thead><tr><th>Receipt</th><th>Student</th><th>Book</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead><tbody>
+<tr><td>REC-2401</td><td>Neha Patil</td><td>The Alchemist</td><td>₹20</td><td>UPI</td><td><span class="badge available">Paid</span></td></tr>
+<tr><td>REC-2398</td><td>Aman Khan</td><td>Design Patterns</td><td>₹20</td><td>Cash</td><td><span class="badge available">Paid</span></td></tr>
+<tr><td>REC-2394</td><td>Priyanka Desai</td><td>Computer Networks</td><td>₹30</td><td>UPI</td><td><span class="badge available">Paid</span></td></tr>
+</tbody></table></div></div>
+</section>
+
+<section id="reports" class="page">
+<div class="card"><div class="card-head"><h3>Library Reports & Analytics</h3><div class="report-actions no-print"><button class="btn secondary" onclick="printReport()">Print Report</button><button class="btn" onclick="downloadReport()">Download CSV Report</button></div></div>
+<div class="card-body"><p class="muted">Generated from the current academic demo data. Sample totals are illustrative, not live database records.</p>
+<div class="stats"><div class="card stat"><div class="icon">📦</div><b id="reportInventory">1,248</b><span class="muted">Total Inventory (demo)</span></div><div class="card stat"><div class="icon">🔄</div><b id="reportCirculation">84</b><span class="muted">Books Issued (demo)</span></div><div class="card stat"><div class="icon">💸</div><b id="reportFines">₹900</b><span class="muted">Fines Collected (demo)</span></div><div class="card stat"><div class="icon">👥</div><b id="reportMembers">12</b><span class="muted">Listed Members</span></div></div>
+<div class="report-section"><h3>1. Inventory Report</h3><div class="report-table-wrap"><table class="table"><thead><tr><th>Metric</th><th>Value</th><th>Notes</th></tr></thead><tbody><tr><td>Total inventory</td><td>1,248</td><td>Sample dashboard figure</td></tr><tr><td>Book titles in demo catalog</td><td id="catalogCount">20</td><td>Titles listed in this website</td></tr><tr><td>Available titles</td><td id="availableCount">—</td><td>Based on demo catalog statuses</td></tr><tr><td>Issued / overdue titles</td><td id="issuedCount">—</td><td>Based on demo catalog statuses</td></tr></tbody></table></div></div>
+<div class="report-section"><h3>2. Member Report</h3><div class="report-table-wrap"><table class="table"><thead><tr><th>Member ID</th><th>Student</th><th>Course</th><th>Books</th><th>Status</th></tr></thead><tbody><tr><td>LM-1001</td><td>Rahul Sharma</td><td>TYCS</td><td>2 / 5</td><td>Active</td></tr><tr><td>LM-1002</td><td>Priya Mehta</td><td>TYCS</td><td>1 / 5</td><td>Active</td></tr><tr><td>LM-1003</td><td>Aman Khan</td><td>SYCS</td><td>3 / 5</td><td>Active</td></tr><tr><td>LM-1004</td><td>Neha Patil</td><td>TYBSc IT</td><td>0 / 5</td><td>Active</td></tr><tr><td>LM-1005</td><td>Vikram Shah</td><td>TYCS</td><td>4 / 5</td><td>Active</td></tr><tr><td>LM-1006</td><td>Ananya Singh</td><td>SYCS</td><td>2 / 5</td><td>Active</td></tr></tbody></table></div></div>
+<div class="report-section"><h3>3. Circulation & Overdue Report</h3><div class="report-table-wrap"><table class="table"><thead><tr><th>Student</th><th>Book</th><th>Transaction</th><th>Due Date</th><th>Status</th></tr></thead><tbody><tr><td>Rahul Sharma</td><td>Atomic Habits</td><td>Issued</td><td>22 Oct</td><td>Active</td></tr><tr><td>Priya Mehta</td><td>Clean Code</td><td>Issued</td><td>11 Oct</td><td>Overdue</td></tr><tr><td>Aman Khan</td><td>Python Crash Course</td><td>Issued</td><td>20 Oct</td><td>Active</td></tr><tr><td>Neha Patil</td><td>The Alchemist</td><td>Returned</td><td>19 Oct</td><td>On Time</td></tr><tr><td>Sneha Rao</td><td>Computer Networks</td><td>Issued</td><td>06 Oct</td><td>Overdue</td></tr></tbody></table></div></div>
+<div class="report-section"><h3>4. Fine & Payment Report</h3><div class="report-table-wrap"><table class="table"><thead><tr><th>Receipt</th><th>Student</th><th>Book</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead><tbody id="reportPaymentRows"><tr><td>REC-2401</td><td>Neha Patil</td><td>The Alchemist</td><td>₹20</td><td>UPI</td><td>Paid (sample)</td></tr><tr><td>REC-2398</td><td>Aman Khan</td><td>Design Patterns</td><td>₹20</td><td>Cash</td><td>Paid (sample)</td></tr><tr><td>REC-2394</td><td>Priyanka Desai</td><td>Computer Networks</td><td>₹30</td><td>UPI</td><td>Paid (sample)</td></tr></tbody></table></div></div>
+<div class="notice report-status" id="reportStatus">Reports ready. Use Download CSV Report to save a spreadsheet-compatible summary, or Print Report to save as PDF from your browser.</div>
+</div></div></section>
+
+<section id="about" class="page"><div class="grid2"><div class="card"><div class="card-head"><h3>Project Synopsis</h3></div><div class="card-body"><p>The Library Management System (LMS) is a software application designed to automate the day-to-day operations of a library, replacing manual record-keeping with a streamlined digital process. It enables librarians to manage books, members, and transactions efficiently, while giving users an easy way to search for books, check availability, and track their borrowing history. The system aims to save time, reduce errors, and improve the overall library experience for both administrators and members.</p><h3>Objectives</h3><ul><li>Automated Workflows: To automate book cataloging, issuing, and returning processes seamlessly.</li><li>Data Integrity: To maintain accurate, centralized records of all books, active members, and past/present transactions.</li><li>Error Reduction: To minimize human error and eliminate messy paperwork associated with traditional registers.</li><li>Instant Retrieval: To provide a fast, query-based search system for quickly locating books by title, author, or category.</li><li>Proactive Alerts: To generate automated notifications for due dates, tracking fines, and managing overdue returns.</li></ul><h3>Conclusion</h3><p>The Library Management System successfully modernizes traditional library workflows by introducing speed, accuracy, and absolute convenience. By entirely digitizing book cataloging, circulation tracking, and reporting, it cuts down administrative overhead and elevates the overall learning environment. The project is fully scalable, making it an ideal software solution for schools, colleges, and public libraries looking to transition into a digital ecosystem.</p></div></div><div class="card"><div class="card-head"><h3>Technology Stack</h3></div><div class="card-body"><ul><li>Frontend: HTML5, CSS3, JavaScript, and React (or Bootstrap) to deliver a responsive, clean user interface.</li><li>Backend: Python (Flask/Django) or Java (Spring Boot) / Node.js to handle core business logic and server requests.</li><li>Database: MySQL or PostgreSQL for structured, relational management of books, users, and logs.</li><li>Authentication &amp;amp; Security: Secure JSON Web Tokens (JWT) and Role-Based Access Control (Admin, Librarian, Member).</li><li>Deployment &amp;amp; Hosting: Deployed via platforms like Render, Heroku, or an internal local server environment.</li></ul><h3>Future Scope</h3><ul><li>Barcode / QR Integration: Integrating optical barcode scanning to make issuing and returning books nearly instantaneous.</li><li>Mobile Application: Developing a companion mobile app for members to browse logs and reserve copies remotely.</li><li>AI Recommendations: Implementing smart, content-based book suggestions driven by reading history and genre preferences.</li><li>Digital E-Books: Expanding beyond physical copies to support direct online e-book and PDF lending.</li><li>Analytics Dashboard: Visualizing trends on library peak hours, most borrowed genres, and inventory health charts.</li></ul></div></div></div></section>
+<footer style="text-align:center;color:#94a3b8;font-size:12px;margin-top:35px">Library Management System • TYCS Academic Project Demo</footer>
+</main></div>
+<div class="modal" id="modal"><div class="modalbox"><h3 id="modalTitle" style="margin-top:0"></h3><form class="form" id="modalForm" onsubmit="saveModal(event)"><div id="modalFields"></div><br><button class="btn" type="submit">Save</button> <button class="btn secondary" type="button" onclick="closeModal()">Cancel</button></form></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const books=[
+{title:'Data Structures Using C',author:'Reema Thareja',cat:'Programming',status:'Available'},
+{title:'Database System Concepts',author:'Silberschatz, Korth',cat:'Database',status:'Available'},
+{title:'Python Crash Course',author:'Eric Matthes',cat:'Programming',status:'Issued'},
+{title:'Operating System Concepts',author:'Silberschatz',cat:'Computer Science',status:'Issued'},
+{title:'Computer Networks',author:'Andrew S. Tanenbaum',cat:'Computer Science',status:'Overdue'},
+{title:'Web Technologies',author:'Uttam K. Roy',cat:'Web Development',status:'Available'},
+{title:'Artificial Intelligence: A Modern Approach',author:'Russell & Norvig',cat:'Data Science',status:'Available'},
+{title:'Machine Learning',author:'Tom M. Mitchell',cat:'Data Science',status:'Available'},
+{title:'Introduction to Algorithms',author:'Cormen, Leiserson',cat:'Computer Science',status:'Available'},
+{title:'Java: The Complete Reference',author:'Herbert Schildt',cat:'Programming',status:'Available'},
+{title:'Let Us C',author:'Yashavant Kanetkar',cat:'Programming',status:'Available'},
+{title:'Computer Graphics',author:'Donald Hearn',cat:'Computer Science',status:'Available'},
+{title:'Discrete Mathematics',author:'Kenneth Rosen',cat:'Mathematics',status:'Available'},
+{title:'Software Engineering',author:'Ian Sommerville',cat:'Computer Science',status:'Available'},
+{title:'Cloud Computing',author:'Rajkumar Buyya',cat:'Computer Science',status:'Available'},
+{title:'The Alchemist',author:'Paulo Coelho',cat:'Fiction',status:'Available'},
+{title:'Atomic Habits',author:'James Clear',cat:'Self Help',status:'Issued'},
+{title:'Clean Code',author:'Robert C. Martin',cat:'Programming',status:'Overdue'},
+{title:'The Pragmatic Programmer',author:'Andrew Hunt',cat:'Programming',status:'Available'},
+{title:'Ikigai',author:'Héctor García',cat:'Self Help',status:'Available'}];
+function showPage(id,btn){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');const t={dashboard:'Library Dashboard',books:'Book Catalog',members:'Member Management',circulation:'Issue & Return',fines:'Fine Management',reports:'Reports & Analytics',about:'Project Information'};document.getElementById('pageTitle').textContent=t[id];window.scrollTo({top:0,behavior:'smooth'})}
+function renderBooks(list=books){document.getElementById('bookGrid').innerHTML=list.map(b=>`<div class="card book"><div class="cover">📖</div><h3>${b.title}</h3><p>${b.author} · ${b.cat}</p><div class="row"><span class="badge ${b.status==='Available'?'available':b.status==='Overdue'?'overdue':'issued'}">${b.status}</span><button class="btn secondary" onclick="toast('${b.status==='Available'?'Book selected for issue':'Book details opened'}')">View</button></div></div>`).join('')}
+function filterBooks(){const q=document.getElementById('bookSearch').value.toLowerCase(),c=document.getElementById('category').value;renderBooks(books.filter(b=>(b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q)||b.cat.toLowerCase().includes(q))&&(c==='All Categories'||b.cat===c)))}
+
+const STORE_KEY='libraflow_v2';
+const defaultMembers=[
+{id:'LM-1001',name:'Rahul Sharma',course:'TYCS',year:'Third Year',phone:'9890000021',email:'rahul@example.com',books:2,status:'Active'},
+{id:'LM-1002',name:'Priya Mehta',course:'TYCS',year:'Third Year',phone:'9790000042',email:'priya@example.com',books:1,status:'Active'},
+{id:'LM-1003',name:'Aman Khan',course:'SYCS',year:'Second Year',phone:'9990000018',email:'aman@example.com',books:3,status:'Active'},
+{id:'LM-1004',name:'Neha Patil',course:'TYBSc IT',year:'Third Year',phone:'9890000065',email:'neha@example.com',books:0,status:'Active'},
+{id:'LM-1005',name:'Vikram Shah',course:'TYCS',year:'Third Year',phone:'9190000034',email:'vikram@example.com',books:4,status:'Active'},
+{id:'LM-1006',name:'Ananya Singh',course:'SYCS',year:'Second Year',phone:'9090000077',email:'ananya@example.com',books:2,status:'Active'},
+{id:'LM-1007',name:'Karan Patil',course:'FYCS',year:'First Year',phone:'8890000014',email:'karan@example.com',books:1,status:'Active'},
+{id:'LM-1008',name:'Sneha Rao',course:'TYCS',year:'Third Year',phone:'9390000052',email:'sneha@example.com',books:2,status:'Active'},
+{id:'LM-1009',name:'Rohan Joshi',course:'TYBSc IT',year:'Third Year',phone:'9690000009',email:'rohan@example.com',books:0,status:'Active'},
+{id:'LM-1010',name:'Priyanka Desai',course:'SYCS',year:'Second Year',phone:'9590000083',email:'priyanka@example.com',books:3,status:'Active'},
+{id:'LM-1011',name:'Mohit Shah',course:'TYCS',year:'Third Year',phone:'8990000027',email:'mohit@example.com',books:1,status:'Active'},
+{id:'LM-1012',name:'Diya Iyer',course:'FYCS',year:'First Year',phone:'9290000061',email:'diya@example.com',books:2,status:'Active'}];
+let members=defaultMembers, transactions=[], newPayments=[], modalType='';
+try{const saved=JSON.parse(localStorage.getItem(STORE_KEY)||'null');if(saved){members=saved.members||defaultMembers;transactions=saved.transactions||[];newPayments=saved.payments||[];if(saved.books&&saved.books.length){books.splice(0,books.length,...saved.books);}}}catch(e){}
+function persist(){try{localStorage.setItem(STORE_KEY,JSON.stringify({members,transactions,payments:newPayments,books}));}catch(e){}}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function openModal(t){
+ modalType=t; document.getElementById('modalTitle').textContent=t;
+ let fields='';
+ if(t==='Register Student') fields='<div class="form-grid"><div><label>Full name *</label><input name="name" required></div><div><label>Course *</label><select name="course" required><option value="FYCS">FYCS</option><option value="SYCS">SYCS</option><option value="TYCS">TYCS</option><option value="TYBSc IT">TYBSc IT</option><option value="Other">Other</option></select></div><div><label>Year</label><select name="year"><option>First Year</option><option>Second Year</option><option selected>Third Year</option><option>Other</option></select></div><div><label>Phone *</label><input name="phone" required pattern="[0-9+() -]{7,16}" title="Enter a valid phone number"></div><div><label>Email</label><input name="email" type="email" placeholder="student@example.com"></div><div><label>Status</label><select name="status"><option>Active</option><option>Inactive</option></select></div></div>';
+ else if(t==='Add New Book') fields='<div class="form-grid"><div><label>Book title *</label><input name="title" required></div><div><label>Author *</label><input name="author" required></div><div><label>Category</label><select name="cat"><option>Programming</option><option>Database</option><option>Web Development</option><option>Data Science</option><option>Computer Science</option><option>Mathematics</option><option>Self Help</option><option>Fiction</option></select></div><div><label>Copies *</label><input name="copies" type="number" min="1" value="1" required></div></div>';
+ else fields='<label>Name / Title</label><input name="name" required><br><br><label>Additional information</label><input name="info">';
+ document.getElementById('modalFields').innerHTML=fields;document.getElementById('modal').classList.add('show');
+}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function saveModal(e){e.preventDefault();const f=new FormData(e.target),v=Object.fromEntries(f.entries());
+ if(modalType==='Register Student'){
+  if(members.some(m=>m.name.toLowerCase()===v.name.trim().toLowerCase()|| (v.phone&&m.phone===v.phone))){toast('A student with this name or phone already exists');return;}
+  const n=Math.max(1000,...members.map(m=>Number((m.id.match(/\\d+/)||['1000'])[0])))+1;
+  members.push({id:'LM-'+n,name:v.name.trim(),course:v.course,year:v.year,phone:v.phone,email:v.email||'',books:0,status:v.status||'Active'});
+  renderMembers();renderMemberOptions();refreshReportCounts();persist();toast('Student registered: LM-'+n);
+ }else if(modalType==='Add New Book'){
+  const copies=Number(v.copies)||1;for(let i=0;i<copies;i++)books.push({title:v.title.trim(),author:v.author.trim(),cat:v.cat,status:'Available'});
+  renderBooks();renderBookOptions();refreshReportCounts();persist();toast('Book added to catalogue');
+ }else toast('Saved successfully');
+ closeModal();
+}
+function renderMembers(){
+ const body=document.getElementById('memberRows');if(!body)return;
+ body.innerHTML=members.map(m=>`<tr><td>${esc(m.id)}</td><td><span class="avatar-sm">${esc(m.name.split(/\\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase())}</span>${esc(m.name)}</td><td>${esc(m.course)} · ${esc(m.year||'')}</td><td>${m.books} / 5</td><td>${esc(m.phone)}</td><td><span class="badge ${m.status==='Active'?'available':'overdue'}">${esc(m.status)}</span></td></tr>`).join('');
+}
+function renderMemberOptions(){const s=document.getElementById('memberSelect');if(s)s.innerHTML=members.filter(m=>m.status==='Active').map(m=>`<option value="${esc(m.id)}">${esc(m.name)} (${esc(m.id)})</option>`).join('');}
+function renderBookOptions(){const s=document.getElementById('bookSelect');if(s)s.innerHTML=books.map((b,i)=>`<option value="${i}">${esc(b.title)} — ${esc(b.status)}</option>`).join('');}
+function renderHistory(){const body=document.getElementById('historyRows');if(!body)return;const rows=transactions.slice().reverse();if(rows.length)body.innerHTML=rows.map(t=>`<tr><td>${esc(t.date)}</td><td>${esc(t.student)}</td><td>${esc(t.book)}</td><td>${esc(t.action)}</td><td>${esc(t.due||'—')}</td><td><span class="badge ${t.result==='Overdue'?'overdue':t.result==='Returned'?'available':'issued'}">${esc(t.result)}</span></td></tr>`).join('');}
+function issueBook(){
+ const m=members.find(x=>x.id===document.getElementById('memberSelect').value),idx=Number(document.getElementById('bookSelect').value),b=books[idx];
+ if(!m||!b){toast('Register/select a student and book first');return;}if(m.status!=='Active'){toast('This membership is inactive');return;}if(m.books>=5){toast('Student has reached the 5-book limit');return;}if(b.status!=='Available'){toast('This book is not available');return;}
+ const issue=document.getElementById('issueDate').value,due=document.getElementById('dueDate').value;if(!issue||!due||due<issue){toast('Please choose valid issue and due dates');return;}
+ b.status='Issued';m.books++;transactions.push({date:issue,student:m.name,memberId:m.id,book:b.title,bookIndex:idx,action:'Issued',due,result:'Active'});
+ renderBooks();renderMembers();renderBookOptions();renderHistory();refreshReportCounts();persist();toast('Book issued to '+m.name);
+}
+function returnBook(){
+ const m=members.find(x=>x.id===document.getElementById('memberSelect').value),idx=Number(document.getElementById('bookSelect').value),b=books[idx];
+ if(!m||!b){toast('Select a student and book');return;}
+ const active=transactions.findLast?transactions.findLast(t=>t.memberId===m.id&&t.bookIndex===idx&&t.action==='Issued'):transactions.slice().reverse().find(t=>t.memberId===m.id&&t.bookIndex===idx&&t.action==='Issued');
+ if(!active && b.status!=='Issued' && b.status!=='Overdue'){toast('No active issue record found for this student and book');return;}
+ const today=new Date().toISOString().slice(0,10),late=Math.max(0,Math.floor((new Date(today)-new Date(active.due))/(86400000))),fine=late*10;
+ if(active){active.result='Returned';active.returnDate=today;}b.status='Available';m.books=Math.max(0,m.books-1);
+ transactions.push({date:today,student:m.name,memberId:m.id,book:b.title,bookIndex:idx,action:'Returned',due:active?active.due:'—',result:late?`Returned · Fine ₹${fine}`:'Returned'});
+ renderBooks();renderMembers();renderBookOptions();renderHistory();refreshReportCounts();persist();
+ if(fine){startPayment(m.name,b.title,fine,late);toast('Returned late. Fine calculated: ₹'+fine+' (₹10/day)');}else toast('Book returned successfully');
+}
+let selectedPayment={student:'',book:'',amount:0,days:0};
+function startPayment(student,book,amount,days){
+ selectedPayment={student,book,amount,days};
+ document.getElementById('payStudent').textContent=student;
+ document.getElementById('payBook').textContent=book;
+ document.getElementById('payDays').textContent=days+' days';
+ document.getElementById('payAmount').textContent='₹'+amount;
+ document.getElementById('confirmPay').disabled=false;
+ document.getElementById('receipt').style.display='none';
+ document.querySelectorAll('.step').forEach((x,i)=>x.classList.toggle('active',i<3));
+ toast('Fine calculated: ₹'+amount);
+}
+function confirmPayment(){
+ const method=document.getElementById('paymentMethod').value;
+ const receiptNo='REC-'+Math.floor(2400+Math.random()*500);
+ document.getElementById('receipt').style.display='block';
+ document.getElementById('receipt').innerHTML='<div class="receipt"><h3 style="margin-top:0">✓ Payment Successful</h3>'+
+ '<div class="receipt-row"><span>Receipt No.</span><b>'+receiptNo+'</b></div>'+
+ '<div class="receipt-row"><span>Student</span><b>'+selectedPayment.student+'</b></div>'+
+ '<div class="receipt-row"><span>Book</span><b>'+selectedPayment.book+'</b></div>'+
+ '<div class="receipt-row"><span>Days overdue</span><b>'+selectedPayment.days+'</b></div>'+
+ '<div class="receipt-row"><span>Payment method</span><b>'+method+'</b></div>'+
+ '<div class="receipt-row"><span>Total Paid</span><b>₹'+selectedPayment.amount+'</b></div>'+
+ '<p style="color:#92400e;margin-bottom:0">This is a simulated academic demo only. No money was transferred and no real payment was verified.</p></div>';
+  updateReportPayments();
+ document.querySelectorAll('.step').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('.step')[4].classList.add('active');
+ document.getElementById('confirmPay').disabled=true;
+ toast('Demo payment recorded. Receipt '+receiptNo+' generated.');
+}
+
+function updatePaymentMethod(){
+ const method=document.getElementById('paymentMethod').value;
+ const qr=document.getElementById('qrPayment');
+ if(!qr)return;
+ if(method==='UPI / Scan QR' && selectedPayment.amount>0){
+   qr.style.display='block';
+   const payload='LIBRAFLOW DEMO PAYMENT\nStudent: '+selectedPayment.student+'\nBook: '+selectedPayment.book+'\nAmount: INR '+selectedPayment.amount+'\nReference: DEMO-'+Date.now();
+   document.getElementById('paymentQr').src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(payload);
+   document.getElementById('qrCaption').textContent='Demo QR · Amount ₹'+selectedPayment.amount;
+ }else{qr.style.display='none';}
+ document.getElementById('confirmPay').textContent=method==='UPI / Scan QR'?'Confirm Demo Payment':'Record Demo Payment';
+}
+function updateReportPayments(){
+ const tbody=document.getElementById('reportPaymentRows');if(!tbody)return;
+ const sample=[['REC-2401','Neha Patil','The Alchemist',20,'UPI','Paid (sample)'],['REC-2398','Aman Khan','Design Patterns',20,'Cash','Paid (sample)'],['REC-2394','Priyanka Desai','Computer Networks',30,'UPI','Paid (sample)']];
+ tbody.innerHTML=sample.map(p=>`<tr>${p.map(x=>`<td>${esc(x)}</td>`).join('')}</tr>`).join('')+newPayments.map(p=>`<tr><td>${esc(p.receipt)}</td><td>${esc(p.student)}</td><td>${esc(p.book)}</td><td>₹${p.amount}</td><td>${esc(p.method)}</td><td>${esc(p.status||'Demo recorded')}</td></tr>`).join('');
+ const total=sample.reduce((a,p)=>a+Number(p[3]),0)+newPayments.reduce((a,p)=>a+Number(p.amount),0);
+ const el=document.getElementById('reportFines');if(el)el.textContent='₹'+total;
+}
+function printReport(){showPage('reports',document.querySelectorAll('.nav button')[5]);window.print();}
+function downloadReport(){
+ const rows=[['LIBRAFLOW LIBRARY REPORT'],['Generated at',new Date().toLocaleString()],[],['INVENTORY SUMMARY','Value'],['Book copies/titles',books.length],['Available',books.filter(b=>b.status==='Available').length],['Issued',books.filter(b=>b.status==='Issued').length],['Overdue status',books.filter(b=>b.status==='Overdue').length],[],['MEMBERS','Member ID','Course','Year','Phone','Email','Books borrowed','Status']];
+ members.forEach(m=>rows.push([m.name,m.id,m.course,m.year,m.phone,m.email,m.books,m.status]));
+ rows.push([],['CIRCULATION HISTORY','Date','Student','Member ID','Book','Action','Due Date','Result']);
+ transactions.forEach(t=>rows.push([t.date,t.student,t.memberId,t.book,t.action,t.due,t.result]));
+ rows.push([],['PAYMENT HISTORY','Receipt','Student','Book','Amount INR','Method','Status','Date']);
+ newPayments.forEach(p=>rows.push([p.receipt,p.student,p.book,p.amount,p.method,p.status,p.date]));
+ const csv='\\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\\r\\n');
+ const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='LibraFlow_Live_Report.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ document.getElementById('reportStatus').textContent='Live CSV report downloaded with student registrations, inventory, circulation history and recorded demo payments.';
+}
+function refreshReportCounts(){
+ document.getElementById('catalogCount').textContent=books.length;
+ document.getElementById('availableCount').textContent=books.filter(b=>b.status==='Available').length;
+ document.getElementById('issuedCount').textContent=books.filter(b=>b.status==='Issued'||b.status==='Overdue').length;
+ const reportMembers=document.getElementById('reportMembers');if(reportMembers)reportMembers.textContent=members.length;
+ const activeIssued=transactions.filter(t=>t.action==='Issued'&&t.result==='Active').length;
+ const reportCirculation=document.getElementById('reportCirculation');if(reportCirculation)reportCirculation.textContent=activeIssued;
+ updateReportPayments();
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
+document.getElementById('issueDate').valueAsDate=new Date();let due=new Date();due.setDate(due.getDate()+14);document.getElementById('dueDate').valueAsDate=due;
+renderBooks();renderMembers();renderMemberOptions();renderBookOptions();renderHistory();refreshReportCounts();updatePaymentMethod();
+</script></body></html>
